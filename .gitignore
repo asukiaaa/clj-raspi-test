@@ -7,3 +7,6 @@
 /checkouts
 /.lein-deps-sum
 *.swp
+.nrepl-port
+hs_err_*
+target/
