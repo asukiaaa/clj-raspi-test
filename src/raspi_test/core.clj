@@ -1,5 +1,8 @@
 (ns raspi-test.core
-  (:require [gpio.core :as gpio]))
+  (:require [gpio.core :as gpio]
+            [overtone.at-at :as at-at]))
+
+(def at-at-pool (at-at/mk-pool))
 
 (def button-port (gpio/open-port 22))
 (def led1-port (gpio/open-port 23))
@@ -16,8 +19,7 @@
     (prn :button-value button-value)
     (if (= :high button-value)
       (gpio/toggle! led1-port)
-      (gpio/toggle! led2-port))
-    (delay 1000)))
+      (gpio/toggle! led2-port))))
 
 (defn -main [& args]
   (.addShutdownHook (Runtime/getRuntime)
@@ -27,8 +29,4 @@
   (gpio/set-direction! led2-port :out)
   (gpio/write-value! led1-port :high)
   (gpio/write-value! led2-port :low)
-  (while true (toggle-led)))
-
-;; runtime shutdown hook
-;; tools.namespace
-;; with-open
+  (at-at/every 1000 toggle-led at-at-pool))
